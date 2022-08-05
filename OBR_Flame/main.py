@@ -99,7 +99,7 @@ def run(mode='Test'):
     # model = DNN(pretrained=True)
     num_ftrs = model.fc.in_features
     model.fc = nn.Linear(num_ftrs,num_classes)
-    print(model)
+    # print(model)
     print(Net)
 
     if torch.cuda.device_count() > 1 and mode == "Train":
@@ -112,7 +112,10 @@ def run(mode='Test'):
     # load pretrained model
     if os.path.isfile(pretrained_model):
         checkpoint = torch.load(pretrained_model)
-        pretrained_dict = remove_prefix(checkpoint, 'module.')
+        if pretrained_model.split('.')[-1] == 'tar':
+            pretrained_dict = remove_prefix(checkpoint['state_dict'], 'module.')
+        else:
+            pretrained_dict = remove_prefix(checkpoint, 'module.')
         model.load_state_dict(pretrained_dict)
         print("load pretrained model:",pretrained_model)
     else:
@@ -147,6 +150,7 @@ def run(mode='Test'):
             optimizer.step()
 
             prediction = torch.max(outputs.data,1)[1]
+
             correct += prediction.eq(labels.data.view_as(prediction)).cpu().sum()
             total += labels.shape[0]
 
@@ -225,6 +229,8 @@ def eval(model,dataloader,criterion,device,stat,label_file_path, best_acc=0.0, m
                 test_loss += batch_loss.item()
 
                 _, predicted = torch.max(outputs.data, 1)
+                # print(outputs.data)
+                # print(predicted)
 
                 save = np.vstack((paths,labels.cpu().numpy()))
                 save = np.vstack((save,predicted.cpu().numpy()))
@@ -257,11 +263,10 @@ def eval(model,dataloader,criterion,device,stat,label_file_path, best_acc=0.0, m
             epoch_acc = 100 * correct / total
             print(f'current acc {epoch_acc}, best_acc {best_acc}')
             mode = config['Mode']
-            if epoch_acc > best_acc and mode !='Test':
+            if epoch_acc > best_acc and mode =='Train':
                 best_acc = epoch_acc
                 best_model_wts = copy.deepcopy(model.state_dict())
                 model.load_state_dict(best_model_wts)
-                # save_name = os.path.join(model_save_path, model_backbone + '_' + str(epoch + 1) + '.pth.tar')
                 path = os.getcwd() + "/best/" + "best_" + model_backbone + "_" + str(best_acc) + ".pth.tar"
                 torch.save(model.state_dict(), path)
 
