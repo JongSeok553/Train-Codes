@@ -1,0 +1,22 @@
+config = {
+    "Version"         : '1.5.2',
+    "Mode"            : "Test", # or Test
+    "UsingGPU"        : "0,1,2,3",
+    "Print_freq"      : 10,
+    "Start_Epoch"     : 0,
+    "Epochs"          : 50,
+    "Input_size"      : [224,224],
+    "Batch_size"      : 256,
+    "Num_workers"    : 12,
+    "Num_classes"     : 3,
+    "LearningRate"    : 0.001,
+    "lr_decay_period" : 3,
+    "Backbone"        : 'se_resnet50',
+    "Finetune"        : False,
+    "Normalize"       : ([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
+    "ProjectRoot"     : "/media/ailab1/55edca0a-e68e-4999-89c4-738b020a4c10/OBR_Flame",
+    "Pretrained_Model": "/best/best_se_resnet50_99.49537426408747.pth.tar",
+    "Transform"       : ['random_flip', 'random_crop', 'color_jitter', 'color_augmentation', 'random_erase'],
+    "DataRoot"        : "/media/ailab1/55edca0a-e68e-4999-89c4-738b020a4c10/OBR_Flame/data/",
+    "backbones":['se_resnet50', 'se_resnet101', 'se_resnet152', 'se_resnext50', 'se_resnext101', 'se_resnext152'],
+}
